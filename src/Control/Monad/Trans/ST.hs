@@ -62,7 +62,7 @@ data STTRet s a = STTRet (State# s) a deriving (Functor)
 newtype STT s m a = STT { unSTT :: State# s -> m (STTRet s a) }
 
 -- | Executes a computation in the 'STT' monad transformer
-{-# INLINE runSTT #-}
+{-# NOINLINE runSTT #-}
 runSTT :: Monad m => (forall s. STT s m a) -> m a
 runSTT m = let (STT f) = m
  -- the parenthesis is needed because of a bug in GHC's parser
