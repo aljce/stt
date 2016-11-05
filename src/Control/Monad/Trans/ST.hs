@@ -1,6 +1,8 @@
-{-# LANGUAGE MagicHash, UnboxedTuples, RankNTypes, MultiParamTypeClasses,
-    FlexibleInstances, TypeFamilies, RecursiveDo, DeriveFunctor,
-    UndecidableInstances #-}
+{-# LANGUAGE MagicHash #-} 
+{-# LANGUAGE UnboxedTuples #-} 
+{-# LANGUAGE RankNTypes #-} 
+{-# LANGUAGE MultiParamTypeClasses #-}
+    
 {- |
    Module      :  Control.Monad.Trans
    Copyright   :  Josef Svenningsson 2008-2010
