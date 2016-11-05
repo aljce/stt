@@ -26,13 +26,13 @@ module Control.Monad.Trans.ST(
       newSTTRef,
       readSTTRef,
       writeSTTRef,
-      -- -- * Mutable arrays
-      -- newSTTArray,
-      -- readSTTArray,
-      -- writeSTTArray,
-      -- freezeSTTArray,
-      -- thawSTTArray,
-      -- runSTTArray,
+      -- * Mutable arrays
+      newSTTArray,
+      readSTTArray,
+      writeSTTArray,
+      freezeSTTArray,
+      thawSTTArray,
+      runSTTArray,
       -- * Unsafe Operations
       unsafeIOToSTT,
       unsafeSTToIO
@@ -145,35 +145,35 @@ writeSTTRef (STRef var) a = STT $ \st1 ->
       st2 -> return (STTRet st2 ())
 
 -- | Creates a new mutable array
-newSTArray :: (Ix i, Monad m) => (i,i) -> e -> STT s m (STArray s i e)
-newSTArray (l,u) init = STT $ \s1# ->
+newSTTArray :: (Ix i, Monad m) => (i,i) -> e -> STT s m (STArray s i e)
+newSTTArray (l,u) init = STT $ \s1# ->
     case safeRangeSize (l,u)            of { n@(I# n#) ->
     case newArray# n# init s1#          of { (# s2#, marr# #) ->
     return (STTRet s2# (STArray l u n marr#)) }}
 
 -- | Retrieves an element from the array
-readSTArray :: (Ix i, Monad m) => STArray s i e -> i -> STT s m e
-readSTArray marr@(STArray l u n _) i =
-    unsafeReadSTArray marr (safeIndex (l,u) n i)
+readSTTArray :: (Ix i, Monad m) => STArray s i e -> i -> STT s m e
+readSTTArray marr@(STArray l u n _) i =
+    unsafeReadSTTArray marr (safeIndex (l,u) n i)
 
-unsafeReadSTArray :: (Ix i, Monad m) => STArray s i e -> Int -> STT s m e
-unsafeReadSTArray (STArray _ _ _ marr#) (I# i#)
+unsafeReadSTTArray :: (Ix i, Monad m) => STArray s i e -> Int -> STT s m e
+unsafeReadSTTArray (STArray _ _ _ marr#) (I# i#)
     = STT $ \s1# -> case readArray# marr# i# s1# of
                       (# s2#, e #) -> return (STTRet s2# e)
 
 -- | Modifies an element in the array
-writeSTArray :: (Ix i, Monad m) => STArray s i e -> i -> e -> STT s m ()
-writeSTArray marr@(STArray l u n _) i e =
-    unsafeWriteSTArray marr (safeIndex (l,u) n i) e
+writeSTTArray :: (Ix i, Monad m) => STArray s i e -> i -> e -> STT s m ()
+writeSTTArray marr@(STArray l u n _) i e =
+    unsafeWriteSTTArray marr (safeIndex (l,u) n i) e
 
-unsafeWriteSTArray :: (Ix i, Monad m) => STArray s i e -> Int -> e -> STT s m ()
-unsafeWriteSTArray (STArray _ _ _ marr#) (I# i#) e = STT $ \s1# ->
+unsafeWriteSTTArray :: (Ix i, Monad m) => STArray s i e -> Int -> e -> STT s m ()
+unsafeWriteSTTArray (STArray _ _ _ marr#) (I# i#) e = STT $ \s1# ->
     case writeArray# marr# i# e s1# of
         s2# -> return (STTRet s2# ())
 
 -- | Copy a mutable array and turn it into an immutable array
-freezeSTArray :: (Ix i,Monad m) => STArray s i e -> STT s m (Array i e)
-freezeSTArray (STArray l u n@(I# n#) marr#) = STT $ \s1# ->
+freezeSTTArray :: (Ix i,Monad m) => STArray s i e -> STT s m (Array i e)
+freezeSTTArray (STArray l u n@(I# n#) marr#) = STT $ \s1# ->
     case newArray# n# arrEleBottom s1#  of { (# s2#, marr'# #) ->
     let copy i# s3# | isTrue# (i# ==# n#) = s3#
                     | otherwise           =
@@ -184,14 +184,14 @@ freezeSTArray (STArray l u n@(I# n#) marr#) = STT $ \s1# ->
     case unsafeFreezeArray# marr'# s3#  of { (# s4#, arr# #) ->
     return (STTRet s4# (Array l u n arr# )) }}}
 
-unsafeFreezeSTArray :: (Ix i, Monad m) => STArray s i e -> STT s m (Array i e)
-unsafeFreezeSTArray (STArray l u n marr#) = STT $ \s1# ->
+unsafeFreezeSTTArray :: (Ix i, Monad m) => STArray s i e -> STT s m (Array i e)
+unsafeFreezeSTTArray (STArray l u n marr#) = STT $ \s1# ->
     case unsafeFreezeArray# marr# s1#   of { (# s2#, arr# #) ->
     return (STTRet s2# (Array l u n arr# )) }
 
 -- | Copy an immutable array and turn it into a mutable array
-thawSTArray :: (Ix i, Monad m) => Array i e -> STT s m (STArray s i e)
-thawSTArray (Array l u n@(I# n#) arr#) = STT $ \s1# ->
+thawSTTArray :: (Ix i, Monad m) => Array i e -> STT s m (STArray s i e)
+thawSTTArray (Array l u n@(I# n#) arr#) = STT $ \s1# ->
     case newArray# n# arrEleBottom s1#  of { (# s2#, marr# #) ->
     let copy i# s3# | isTrue# (i# ==# n#) = s3#
                     | otherwise           =
@@ -201,18 +201,18 @@ thawSTArray (Array l u n@(I# n#) arr#) = STT $ \s1# ->
     case copy 0# s2#                    of { s3# ->
     return (STTRet s3# (STArray l u n marr# )) }}
 
-unsafeThawSTArray :: (Ix i, Monad m) => Array i e -> STT s m (STArray s i e)
-unsafeThawSTArray (Array l u n arr#) = STT $ \s1# ->
+unsafeThawSTTArray :: (Ix i, Monad m) => Array i e -> STT s m (STArray s i e)
+unsafeThawSTTArray (Array l u n arr#) = STT $ \s1# ->
     case unsafeThawArray# arr# s1#      of { (# s2#, marr# #) ->
     return (STTRet s2# (STArray l u n marr# )) }
 
 -- | A safe way to create and work with a mutable array before returning an
 -- immutable array for later perusal.  This function avoids copying
 -- the array before returning it.
-runSTArray :: (Ix i, Monad m)
+runSTTArray :: (Ix i, Monad m)
            => (forall s . STT s m (STArray s i e))
            -> m (Array i e)
-runSTArray st = runSTT (st >>= unsafeFreezeSTArray)
+runSTTArray st = runSTT (st >>= unsafeFreezeSTTArray)
 
 
 {-# NOINLINE unsafeIOToSTT #-}
