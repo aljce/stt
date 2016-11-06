@@ -52,10 +52,11 @@ import Data.IORef
 import Unsafe.Coerce
 import System.IO.Unsafe
 
-#if __GLASGOW_HASKELL__ < 763
-isTrue# :: Bool -> Bool
-isTrue# x = x
-#endif
+-- This breaks travis
+-- #if __GLASGOW_HASKELL__ < 763
+-- isTrue# :: Bool -> Bool
+-- isTrue# x = x
+-- #endif
 
 -- | Executes a computation in the 'STT' monad transformer
 {-# NOINLINE runSTT #-}
