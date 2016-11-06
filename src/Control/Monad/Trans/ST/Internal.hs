@@ -5,7 +5,8 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE UndecidableInstances #-}
-{-# LANGUAGE RecursiveDo #-}
+{-# LANGUAGE DoRec #-}
+{-# LANGUAGE CPP #-}
 
 {-# OPTIONS_HADDOCK not-home #-}
 
@@ -25,6 +26,11 @@ import Control.Monad.Writer.Class
 import Control.Monad.Fix
 import Control.Monad.Primitive
 import Control.Applicative (Applicative(..))
+
+#if __GLASGOW_HASKELL__ < 708
+isTrue# :: Bool -> Bool
+isTrue# x = x
+#endif
 
 data STTRet s a = STTRet (State# s) a deriving (Functor)
 
