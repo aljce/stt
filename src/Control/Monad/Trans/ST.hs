@@ -52,11 +52,20 @@ import Data.IORef
 import Unsafe.Coerce
 import System.IO.Unsafe
 
--- This breaks travis
--- #if __GLASGOW_HASKELL__ <= 763
--- isTrue# :: Bool -> Bool
--- isTrue# x = x
--- #endif
+-- Prior to GHC 7.8, the operator ==# returns Bool.
+-- It was then changed to return Int#. This helper
+-- function is defined so that we can write:
+--
+--   primIsTrue# (a ==# b)
+--
+-- This provides consistent behavior across all GHCs.
+#if __GLASGOW_HASKELL__ < 708
+primIsTrue# :: Bool -> Bool
+primIsTrue# x = x
+#else 
+primIsTrue# :: Int# -> Bool
+primIsTrue# = isTrue#
+#endif
 
 -- | Executes a computation in the 'STT' monad transformer
 {-# NOINLINE runSTT #-}
@@ -115,7 +124,7 @@ unsafeWriteSTTArray (STArray _ _ _ marr#) (I# i#) e = STT $ \s1# ->
 freezeSTTArray :: (Ix i,Monad m) => STArray s i e -> STT s m (Array i e)
 freezeSTTArray (STArray l u n@(I# n#) marr#) = STT $ \s1# ->
     case newArray# n# arrEleBottom s1#  of { (# s2#, marr'# #) ->
-    let copy i# s3# | isTrue# (i# ==# n#) = s3#
+    let copy i# s3# | primIsTrue# (i# ==# n#) = s3#
                     | otherwise           =
             case readArray# marr# i# s3# of { (# s4#, e #) ->
             case writeArray# marr'# i# e s4# of { s5# ->
@@ -133,7 +142,7 @@ unsafeFreezeSTTArray (STArray l u n marr#) = STT $ \s1# ->
 thawSTTArray :: (Ix i, Monad m) => Array i e -> STT s m (STArray s i e)
 thawSTTArray (Array l u n@(I# n#) arr#) = STT $ \s1# ->
     case newArray# n# arrEleBottom s1#  of { (# s2#, marr# #) ->
-    let copy i# s3# | isTrue# (i# ==# n#) = s3#
+    let copy i# s3# | primIsTrue# (i# ==# n#) = s3#
                     | otherwise           =
             case indexArray# arr# i#    of { (# e #) ->
             case writeArray# marr# i# e s3# of { s4# ->
