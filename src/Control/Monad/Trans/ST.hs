@@ -62,7 +62,7 @@ import System.IO.Unsafe
 #if __GLASGOW_HASKELL__ < 708
 primIsTrue# :: Bool -> Bool
 primIsTrue# x = x
-#else 
+#else
 primIsTrue# :: Int# -> Bool
 primIsTrue# = isTrue#
 #endif
