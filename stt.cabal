@@ -1,5 +1,5 @@
 name:                stt
-version:             0.1.0.0
+version:             0.2.0.0
 synopsis:            A monad transformer version of the ST monad
 license:             MIT
 license-file:        LICENSE
