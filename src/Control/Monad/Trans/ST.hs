@@ -53,7 +53,7 @@ import Unsafe.Coerce
 import System.IO.Unsafe
 
 -- This breaks travis
--- #if __GLASGOW_HASKELL__ < 763
+-- #if __GLASGOW_HASKELL__ <= 763
 -- isTrue# :: Bool -> Bool
 -- isTrue# x = x
 -- #endif
