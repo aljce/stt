@@ -26,7 +26,7 @@ source-repository head
 library
   exposed-modules:     Control.Monad.Trans.ST
                        Control.Monad.Trans.ST.Internal
-  build-depends:       base >= 4.8 && < 5
+  build-depends:       base >= 4.7 && < 5
                      , mtl  >= 2.2.1 && < 3
                      , primitive >= 0.6.1 && < 0.7
   hs-source-dirs:      src
