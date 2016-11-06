@@ -84,6 +84,6 @@ instance MonadWriter w m => MonadWriter w (STT s m) where
 -- | Allow the result of a state transformer computation to be used (lazily) inside the computation.
 --   Note that if f is strict, fixSTT f = _|_.
 fixSTT :: (MonadFix m) => (a -> STT s m a) -> STT s m a
-fixSTT k = STT $ \ s -> do
-    rec ans@(STTRet _ r) <- unSTT (k r) s
+fixSTT k = STT $ \ s -> mdo
+    ans@(STTRet _ r) <- unSTT (k r) s
     return ans
