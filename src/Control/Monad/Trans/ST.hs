@@ -1,8 +1,7 @@
-{-# LANGUAGE MagicHash #-} 
-{-# LANGUAGE UnboxedTuples #-} 
-{-# LANGUAGE RankNTypes #-} 
+{-# LANGUAGE MagicHash #-}
+{-# LANGUAGE UnboxedTuples #-}
+{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-    
 {- |
    Module      :  Control.Monad.Trans
    Copyright   :  Josef Svenningsson 2008-2010
@@ -147,7 +146,6 @@ runSTTArray :: (Ix i, Monad m)
            => (forall s . STT s m (STArray s i e))
            -> m (Array i e)
 runSTTArray st = runSTT (st >>= unsafeFreezeSTTArray)
-
 
 {-# NOINLINE unsafeIOToSTT #-}
 unsafeIOToSTT :: (Monad m) => IO a -> STT s m a
