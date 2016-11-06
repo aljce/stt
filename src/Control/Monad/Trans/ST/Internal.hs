@@ -24,6 +24,7 @@ import Control.Monad.State.Class
 import Control.Monad.Writer.Class
 import Control.Monad.Fix
 import Control.Monad.Primitive
+import Control.Applicative (Applicative(..))
 
 data STTRet s a = STTRet (State# s) a deriving (Functor)
 
