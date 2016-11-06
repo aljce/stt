@@ -2,6 +2,7 @@
 {-# LANGUAGE UnboxedTuples #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE CPP #-}
 {- |
    Module      :  Control.Monad.Trans
    Copyright   :  Josef Svenningsson 2008-2010
@@ -50,6 +51,11 @@ import Control.Applicative
 import Data.IORef
 import Unsafe.Coerce
 import System.IO.Unsafe
+
+#if __GLASGOW_HASKELL__ < 763
+isTrue# :: Bool -> Bool
+isTrue# x = x
+#endif
 
 -- | Executes a computation in the 'STT' monad transformer
 {-# NOINLINE runSTT #-}
