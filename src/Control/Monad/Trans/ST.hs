@@ -52,7 +52,14 @@ import Data.IORef
 import Unsafe.Coerce
 import System.IO.Unsafe
 
-#if __GLASGOW_HASKELL__ < 763
+-- Prior to GHC 7.8, the operator ==# returns Bool.
+-- It was then changed to return Int#. This helper
+-- function is defined so that we can write:
+--
+--   primIsTrue# (a ==# b)
+--
+-- This provides consistent behavior across all GHCs.
+#if __GLASGOW_HASKELL__ < 708
 primIsTrue# :: Bool -> Bool
 primIsTrue# x = x
 #else 
