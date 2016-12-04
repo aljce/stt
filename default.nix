@@ -9,7 +9,7 @@ let
       }:
       mkDerivation {
         pname = "stt";
-        version = "0.1.0.0";
+        version = "0.2.1";
         src = ./.;
         libraryHaskellDepends = [ base mtl primitive ];
         testHaskellDepends = [
