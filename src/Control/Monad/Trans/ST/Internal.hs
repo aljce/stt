@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE MagicHash #-}
 {-# LANGUAGE UnboxedTuples #-}
@@ -25,6 +26,9 @@ import Control.Monad.Writer.Class
 import Control.Monad.Fix
 import Control.Monad.Primitive
 import Control.Applicative (Applicative(..))
+#if MIN_VERSION_base(4,9,0)
+import qualified Control.Monad.Fail as Fail
+#endif
 
 data STTRet s a = STTRet (State# s) a deriving (Functor)
 
@@ -46,7 +50,17 @@ instance Monad m => Monad (STT s m) where
   STT m >>= k = STT $ \st ->
     do STTRet new_st a <- m st
        unSTT (k a) new_st
+#if !(MIN_VERSION_base(4,13,0)) && MIN_VERSION_base(4,9,0)
   fail msg = lift (fail msg)
+#endif
+
+#if MIN_VERSION_base(4,9,0)
+instance (Fail.MonadFail m, Monad m) => Fail.MonadFail (STT s m) where
+  fail msg = lift (fail msg)
+#endif
+
+
+
 
 instance MonadTrans (STT s) where
   lift m = STT $ \st ->
